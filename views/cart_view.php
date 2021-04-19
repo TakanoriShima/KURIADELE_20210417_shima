@@ -49,6 +49,7 @@
         <?php if($delete_message !== null): ?>
             <p><?= $delete_message ?></p>
         <?php endif; ?>
+        
         <!--$login_customerがnull空でない時に実行-->
         <?php if($login_customer !== null): ?>
         

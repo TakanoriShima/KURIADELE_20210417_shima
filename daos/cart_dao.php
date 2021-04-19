@@ -177,31 +177,29 @@
             }
         }
         // 顧客番号を指定した場合の item_id を取得するメソッド
-        public static function find_cart($item_id, $number, $customer_id){
+        public static function find_cart($customer_id, $item_id){
             $pdo = null;
             $stmp = null;
             try{
                 // データベースに接続する神様取得
                 $pdo = self::get_connection();
-                print 'OK1';
+
                 // update文を実行する準備（数字はわざとあやふやにする
-                $stmt= $pdo -> prepare('SELECT item_id,SUM(number) as number FROM carts WHERE customer_id=:customer_id GROUP BY item_id:item_id');
+                $stmt= $pdo -> prepare('SELECT * FROM carts WHERE customer_id=:customer_id AND item_id=:item_id');
                                      
-                print 'OK2';
                 // バインド処理（あやふやだった数字を実データで埋める）
                 $stmt->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-                $stmt->bindValue(':number', $number, PDO::PARAM_INT);
                 $stmt->bindValue(':customer_id', $customer_id, PDO::PARAM_INT);
-                print 'OK3';
-                // print 'OK3'までは表示されます
-                // var_dump ($customer_id);
                 
                 // SELECT文本番実行
                 $stmt->execute();
-                print 'OK4';
                 
+                // フェッチの結果を、Userクラスのインスタンスにマッピングする
+                $stmt->setFetchMode(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, 'Cart');
                 
-                return 'カート追加しました';
+                //カート情報を取得
+                $cart = $stmt->fetch();
+                return $cart;
                 
             }catch(PDOException $e){
                 
